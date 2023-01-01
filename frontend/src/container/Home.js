@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { useState, useEffect } from 'react';
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
@@ -13,6 +14,52 @@ import Typography from '@mui/material/Typography';
 import Link from '@mui/material/Link';
 import GlobalStyles from '@mui/material/GlobalStyles';
 import Container from '@mui/material/Container';  
+
+import Web3 from "web3";
+import Web3Modal from "web3modal";
+import WalletConnectProvider from "@walletconnect/web3-provider";
+import CoinbaseWalletSDK from "@coinbase/wallet-sdk";
+
+const INFURA_ID = process.env.INFURA_ID;
+const providerOptions = {
+  walletconnect: {
+    package: WalletConnectProvider, // required
+    options: {
+      infuraId: INFURA_ID, // required
+    },
+  },
+  coinbasewallet: {
+    package: CoinbaseWalletSDK, // Required
+    options: {
+      appName: "web3modal", // Required
+      infuraId: INFURA_ID, // Required
+      rpc: "", // Optional if `infuraId` is provided; otherwise it's required
+      chainId: 1, // Optional. It defaults to 1 if not provided
+      darkMode: false, // Optional. Use dark theme, defaults to false
+    },
+  },
+  binancechainwallet: {
+    package: true,
+  },
+};
+const web3Modal = new Web3Modal({
+  network: "goerli", // optional
+  cacheProvider: true, // optional
+  providerOptions, // required
+});
+const connectWallet = async () => {
+  if (window.ethereum) {
+    const provider = await web3Modal.connect();
+    const web3 = new Web3(provider);
+    await window.ethereum.send("eth_requestAccounts");
+    const accounts = await web3.eth.getAccounts();
+    const account = accounts[0];
+    return account;
+  } else {
+    // Show alert if Ethereum provider is not detected
+    alert("Please install Mask");
+  }
+};
 
 function Copyright(props) {
   return (
@@ -62,7 +109,23 @@ const tiers = [
 //   },
 // ];
 
+const toggleWithString = (s) => {
+  return s.substr(0,5) + "..." + s.substr(37,40)
+}
+
 function Home() {
+  const [account, setAccount] = useState("");
+
+  const handleConnect = async (event) => {
+    event.preventDefault();
+    const addr = await connectWallet()
+    setAccount(addr);
+  };
+
+  useEffect(() => {
+    console.log(account);
+  }, [account]);
+
   return (
     <React.Fragment>
       <GlobalStyles styles={{ ul: { margin: 0, padding: 0, listStyle: 'none' } }} />
@@ -95,9 +158,24 @@ function Home() {
               About Us
             </Link>
           </nav>
-          <Button href="#" variant="outlined" sx={{ my: 1, mx: 1.5 }}>
-            Login
-          </Button>
+          { 
+            (account === "") && 
+            <Button href="#" variant="outlined" sx={{ my: 1, mx: 1.5 }} onClick={handleConnect}>
+              Login
+            </Button> 
+          }
+          { account !== "" && 
+            <>
+              <Button>
+                {toggleWithString(account)}
+              </Button>
+              {/* <Button>
+                Disconnect
+              </Button> */}
+            </>
+            
+             
+          }
         </Toolbar>
       </AppBar>
       {/* Hero unit */}
