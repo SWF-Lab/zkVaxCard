@@ -20,6 +20,14 @@ import Web3Modal from "web3modal";
 import WalletConnectProvider from "@walletconnect/web3-provider";
 import CoinbaseWalletSDK from "@coinbase/wallet-sdk";
 
+import { useVax } from '../hook/useVax';
+import { useSnackbar } from 'notistack';
+import Copyright from '../components/copyright';
+import DoctorModal from '../components/doctorModal';
+import UserModal from '../components/userModal';
+import VerifyModal from '../components/verifyModal';
+
+
 const INFURA_ID = process.env.INFURA_ID;
 const providerOptions = {
   walletconnect: {
@@ -42,6 +50,7 @@ const providerOptions = {
     package: true,
   },
 };
+
 const web3Modal = new Web3Modal({
   network: "goerli", // optional
   cacheProvider: true, // optional
@@ -61,24 +70,11 @@ const connectWallet = async () => {
   }
 };
 
-function Copyright(props) {
-  return (
-    <Typography variant="body2" color="text.secondary" align="center" {...props}>
-      {'Copyright © '}
-      <Link color="inherit" href="https://mui.com/">
-        zkVaxCard
-      </Link>{' '}
-      {new Date().getFullYear()}
-      {'.'}
-    </Typography>
-  );
-}
-
 const tiers = [
   {
     title: 'Doctors',
     description: [
-      'Add members',
+      'Doctors with permission can add members',
     ],
     buttonText: 'Add member',
     buttonVariant: 'outlined',
@@ -86,41 +82,56 @@ const tiers = [
   {
     title: 'Users',
     description: [
-      'Verify',
+      'Users can verify yourself and get a proof',
     ],
     buttonText: 'Verify',
     buttonVariant: 'outlined',
   },
-  {
-    title: 'Verifiers',
-    description: [
-      'Verify',
-    ],
-    buttonText: 'Verify',
-    buttonVariant: 'outlined',
-  },
+  
 ];
 
-
-// const footers = [
-//   {
-//     title: 'Company',
-//     description: ['Team'],
-//   },
-// ];
 
 const toggleWithString = (s) => {
   return s.substr(0,5) + "..." + s.substr(37,40)
 }
 
-function Home() {
-  const [account, setAccount] = useState("");
+const Home = () => {
+  const {account, setAccount, doctorModalOpen, setDoctorModalOpen, userModalOpen, setUserModalOpen, verifyModalOpen, setVerifyModalOpen} = useVax();
+  const { enqueueSnackbar } = useSnackbar();
+
+  const handleModalOpen = (type) => {
+    if (type === "Doctors")
+      setDoctorModalOpen(true)
+    else if(type === "Users")
+      setUserModalOpen(true)
+    else
+      setVerifyModalOpen(true)
+  }
+  const handleModalClose = (type) => {
+    if (type === "Doctors")
+      setDoctorModalOpen(false)
+    else if(type === "Users")
+      setUserModalOpen(false)
+    else
+      setVerifyModalOpen(false)
+  }
 
   const handleConnect = async (event) => {
     event.preventDefault();
     const addr = await connectWallet()
     setAccount(addr);
+    // TODO: check if account is Doctor (call setIsDoctor();)
+
   };
+
+  const addMember = (userId, doze) => {
+    setDoctorModalOpen(false)
+    console.log("addId:", userId);
+    console.log("doze:", doze);
+    enqueueSnackbar('Member added succesfully', { variant:'success' });
+    //TODO: _addMember
+  }
+
 
   useEffect(() => {
     console.log(account);
@@ -173,8 +184,6 @@ function Home() {
                 Disconnect
               </Button> */}
             </>
-            
-             
           }
         </Toolbar>
       </AppBar>
@@ -202,8 +211,8 @@ function Home() {
               item
               key={tier.title}
               xs={12}
-              sm={tier.title === 'Enterprise' ? 12 : 6}
-              md={4}
+              sm={6}
+              md={6}
             >
               <Card>
                 <CardHeader
@@ -245,8 +254,8 @@ function Home() {
                   </ul>
                 </CardContent>
                 <CardActions>
-                  <Button fullWidth variant={tier.buttonVariant}>
-                    {tier.buttonText}
+                  <Button fullWidth variant={tier.buttonVariant} onClick={() => handleModalOpen(tier.title)}>
+                    {tier.buttonText} 
                   </Button>
                 </CardActions>
               </Card>
@@ -254,6 +263,18 @@ function Home() {
           ))}
         </Grid>
       </Container>
+
+
+      {/* Modals */}
+      <DoctorModal 
+        open={doctorModalOpen} 
+        close={() => handleModalClose("Doctors")}
+        addMember={(id, doze) => addMember(id, doze)}
+      />
+      <UserModal open={userModalOpen} close={() => handleModalClose("Users")}/>
+      <VerifyModal open={verifyModalOpen} close={() => handleModalClose("Verify")}/>
+
+
       {/* Footer */}
       <Container
         maxWidth="md"
@@ -264,28 +285,12 @@ function Home() {
           py: [3, 6],
         }}
       >
-        {/* <Grid container spacing={4} justifyContent="space-evenly">
-          {footers.map((footer) => (
-            <Grid item xs={6} sm={3} key={footer.title}>
-              <Typography variant="h6" color="text.primary" gutterBottom>
-                {footer.title}
-              </Typography>
-              <ul>
-                {footer.description.map((item) => (
-                  <li key={item}>
-                    <Link href="#" variant="subtitle1" color="text.secondary">
-                      {item}
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            </Grid>
-          ))}
-        </Grid> */}
         <Copyright sx={{ mt: 5 }} />
       </Container>
       {/* End footer */}
+        
     </React.Fragment>
+
   );
 }
 
