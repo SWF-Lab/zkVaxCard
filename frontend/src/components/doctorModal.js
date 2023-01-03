@@ -69,7 +69,6 @@ const DoctorModal = (props) => {
       const beforeHash = addId.concat(password);
       let seed = keccak256(beforeHash).toString('hex')
       await props.addMember(seed, doze)
-
     }
   }
 

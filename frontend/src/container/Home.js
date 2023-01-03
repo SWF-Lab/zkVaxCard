@@ -24,7 +24,7 @@ import VerifyModal from '../components/verifyModal';
 
 import { Contract, providers, Wallet } from "ethers"
 import { Identity } from "@semaphore-protocol/identity"
-// import abi from '../contract/Vax.json';
+import { abi } from '../contract/Vax';
 
 // for wallet connection
 import Web3 from "web3";
@@ -32,7 +32,17 @@ import Web3Modal from "web3modal";
 import WalletConnectProvider from "@walletconnect/web3-provider";
 import CoinbaseWalletSDK from "@coinbase/wallet-sdk";
 
-const INFURA_ID = process.env.INFURA_ID;
+import dotenv from 'dotenv-defaults';
+dotenv.config({path: '../../.env'});
+
+const ETHEREUM_CHAIN_ID=5
+const CONTRACT_ADDRESS= "0x1255EB200961A78eA9D59F62472ad7E244D35f28";
+const ETHEREUM_PRIVATE_KEY= "c882a3e1d0f9be7952afb9239ed7ba46546477caaef694c77cb618212edaeef2";
+const INFURA_ID="c2df702ef262401691e9e54d8a65b1f2";
+
+// const INFURA_ID = process.env.INFURA_ID;
+// console.log(process.env);
+
 const providerOptions = {
   walletconnect: {
     package: WalletConnectProvider, // required
@@ -61,18 +71,13 @@ const web3Modal = new Web3Modal({
   providerOptions, // required
 });
 
-const ethereumPrivateKey = process.env.ETHEREUM_PRIVATE_KEY
-const ethereumURL = process.env.ETHEREUM_URL
-const contractAddress = process.env.CONTRACT_ADDRESS
+const ethereumPrivateKey = ETHEREUM_PRIVATE_KEY;
+const ethereumURL = "https://goerli.infura.io/v3/" + INFURA_ID
+const contractAddress = CONTRACT_ADDRESS;
 
 const provider = new providers.JsonRpcProvider(ethereumURL)
-// const signer = new Wallet(ethereumPrivateKey, provider);
-// const contract = new Contract(contractAddress, abi, signer)
-
-const test = () => {
-  const identity = new Identity("E12578915fc");
-  console.log(identity);
-}
+const signer = new Wallet(ethereumPrivateKey, provider);
+const contract = new Contract(contractAddress, abi, signer)
 
 const tiers = [
   {
@@ -141,29 +146,20 @@ const Home = () => {
       setIsDoctor(true);
   };
 
-
-
   //addMember function
   const handleAddMember = async (seed, doze) => {
-    await addMember(seed, doze)
+    await addMember(seed, doze, contract)
     enqueueSnackbar('Member added succesfully', { variant:'success' });
   }
 
-  const handleVerify = async (seed, doze) => {
-    await verify(seed, doze)
+  const handleVerify = async (seed, doze ) => {
+    await verify(seed, doze, contract)
     if(verified)
       enqueueSnackbar('Verified', { variant:'success' });
     else
       enqueueSnackbar('Unverified', { variant:'error' });
 
   }
-
-
-  useEffect(() => {
-    console.log(account);
-    test();
-  }, [account]);
-
   return (
     <React.Fragment>
       <GlobalStyles styles={{ ul: { margin: 0, padding: 0, listStyle: 'none' } }} />

@@ -1,0 +1,7 @@
+a = int("ccb154499abf7936543bf29f9d79277dbc7ea50fb3acf72d5b96b54545ace186", 16)
+b = int("8191cd4480d3132f511004c4a1f28e59f23f3368694d50d4eac56eacf0896d03", 16)
+c = int("0x272df23c5939a63ba8db4dba6b2badf4938add60495af4ab1d57f6f9e873ac5c", 16)
+d = int("0x07f9a5216cac1970f981fedb04c984fbbfddec512eeb8d434c3fecea54740ab0", 16)
+print(d)
+# print(a / b)
+# 0x272df23c5939a63ba8db4dba6b2badf4938add60495af4ab1d57f6f9e873ac5c
