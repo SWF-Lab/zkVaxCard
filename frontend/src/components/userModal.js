@@ -82,17 +82,10 @@ const UserModal = (props) => {
         Verify
       </Typography>
       <Typography id="modal-modal-description" sx={{ mt: 2 }}>
-          {
-            account ? 
             "Please enter your ID and password"
-            :
-            "Please Log in first"
-          }
       </Typography>
       <p></p>
-      {
-        account &&
-        <>
+ 
         <TextField 
           id="users-ID" 
           label="Your ID" 
@@ -158,8 +151,8 @@ const UserModal = (props) => {
         <Button variant="outlined" color="error" onClick={() => handleSubmit()}>
             VERIFY
         </Button>
-        </>
-      }
+        
+      
     </Box>
     </Modal>
     
