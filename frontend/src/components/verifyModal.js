@@ -1,14 +1,16 @@
 import Modal from '@mui/material/Modal';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
+
 import Button from '@mui/material/Button';
 import { useVax } from '../hook/useVax';
 
 const VerifyModal = (props) => {
 
-  const { setVerifyModalOpen } = useVax();
+  const { setVerifyModalOpen, verified, setVerified } = useVax();
   
   const handleClose = () => {
+    setVerified(false)
     setVerifyModalOpen(false);
   }
 
@@ -35,9 +37,17 @@ const VerifyModal = (props) => {
       <Typography id="modal-modal-title" variant="h6" component="h2">
         Verify
       </Typography>
-      <Typography id="modal-modal-description" sx={{ mt: 2 }}>
-        VERIFICATION PHOTO HERE
-      </Typography>
+      { verified?
+        <Typography variant="h4" color="green" id="verified" sx={{ mt: 2 }}>
+          VERIFIED
+        </Typography>
+        :
+        <Typography variant="h4" color="red" id="unverified" sx={{ mt: 2 }}>
+          UNVERIFIED
+        </Typography>
+      }
+      
+      <p></p>
       
       <Button variant="outlined" color="error" onClick={() => handleClose()}>
           CLOSE

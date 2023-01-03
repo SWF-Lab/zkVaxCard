@@ -9,11 +9,13 @@ import ToggleButton from '@mui/material/ToggleButton';
 import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
 import Button from '@mui/material/Button';
 import { useSnackbar } from 'notistack';
+import keccak256 from 'keccak256'
 
 const DoctorModal = (props) => {
   
   const {account, isDoctor} = useVax();
   const [addId, setAddId] = useState("")
+  const [password, setPassword] = useState("")
   const [doze, setDoze] = useState(3);
   const { enqueueSnackbar } = useSnackbar();
   
@@ -32,16 +34,25 @@ const DoctorModal = (props) => {
   const handleSetId = (e) => {
     setAddId(e.target.value);
   }
+  const handleSetPassword = (e) => {
+    setPassword(e.target.value);
+  }
 
   const handleSetDoze = (e, newAlignment) => {
     setDoze(newAlignment);
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if(!addId)
       enqueueSnackbar('ID required', { variant:'error' });
-    else
-      props.addMember(addId, doze)
+    else if(!password)
+      enqueueSnackbar('Password required', { variant:'error' });  
+    else{
+      const beforeHash = addId.concat(password);
+      let seed = keccak256(beforeHash).toString('hex')
+      await props.addMember(seed, doze)
+      
+    }
   }
 
   return(
@@ -69,7 +80,8 @@ const DoctorModal = (props) => {
       {
         account && isDoctor &&
         <>
-        <TextField id="outlined-basic" label="patient-ID" variant="outlined" required value={addId} onChange={handleSetId}/>
+        <TextField id="patient-ID" label="patient-ID" variant="outlined" required value={addId} onChange={handleSetId}/>
+        <TextField id="patient-password" label="patient-password" variant="outlined" required value={password} onChange={handleSetPassword}/>
         
         <p></p>
         <ToggleButtonGroup

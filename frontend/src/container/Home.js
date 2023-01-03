@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { useState, useEffect } from 'react';
+import { useEffect } from 'react';
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
@@ -90,13 +90,12 @@ const tiers = [
   
 ];
 
-
 const toggleWithString = (s) => {
   return s.substr(0,5) + "..." + s.substr(37,40)
 }
 
 const Home = () => {
-  const {account, setAccount, doctorModalOpen, setDoctorModalOpen, userModalOpen, setUserModalOpen, verifyModalOpen, setVerifyModalOpen} = useVax();
+  const {account, setAccount, doctorModalOpen, setDoctorModalOpen, userModalOpen, setUserModalOpen, verifyModalOpen, setVerifyModalOpen, addMember, verify, verified} = useVax();
   const { enqueueSnackbar } = useSnackbar();
 
   const handleModalOpen = (type) => {
@@ -121,15 +120,23 @@ const Home = () => {
     const addr = await connectWallet()
     setAccount(addr);
     // TODO: check if account is Doctor (call setIsDoctor();)
-
   };
 
-  const addMember = (userId, doze) => {
-    setDoctorModalOpen(false)
-    console.log("addId:", userId);
-    console.log("doze:", doze);
+
+
+  //addMember function
+  const handleAddMember = async (seed, doze) => {
+    await addMember(seed, doze)
     enqueueSnackbar('Member added succesfully', { variant:'success' });
-    //TODO: _addMember
+  }
+
+  const handleVerify = async (seed, doze) => {
+    await verify(seed, doze)
+    if(verified)
+      enqueueSnackbar('Verified', { variant:'success' });
+    else
+      enqueueSnackbar('Unverified', { variant:'error' });
+
   }
 
 
@@ -269,9 +276,13 @@ const Home = () => {
       <DoctorModal 
         open={doctorModalOpen} 
         close={() => handleModalClose("Doctors")}
-        addMember={(id, doze) => addMember(id, doze)}
+        addMember={(seed, doze) => handleAddMember(seed, doze)}
       />
-      <UserModal open={userModalOpen} close={() => handleModalClose("Users")}/>
+      <UserModal 
+        open={userModalOpen} 
+        close={() => handleModalClose("Users")}
+        verify={(seed, doze) => handleVerify(seed, doze)}
+      />
       <VerifyModal open={verifyModalOpen} close={() => handleModalClose("Verify")}/>
 
 
