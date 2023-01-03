@@ -10,6 +10,15 @@ import { useVax } from '../hook/useVax';
 import { useSnackbar } from 'notistack';
 import keccak256 from 'keccak256'
 
+import { AccountCircle } from '@mui/icons-material';
+import LockIcon from '@mui/icons-material/Lock';
+import InputAdornment from '@mui/material/InputAdornment';
+import IconButton from '@mui/material/IconButton';
+import OutlinedInput from '@mui/material/OutlinedInput';
+import InputLabel from '@mui/material/InputLabel';
+import FormControl from '@mui/material/FormControl';
+import Visibility from '@mui/icons-material/Visibility';
+import VisibilityOff from '@mui/icons-material/VisibilityOff';
 
 const UserModal = (props) => {
 
@@ -18,6 +27,13 @@ const UserModal = (props) => {
   const [password, setPassword] = useState("")
   const [doze, setDoze] = useState(3)
   const { enqueueSnackbar } = useSnackbar();
+  const [showPassword, setShowPassword] = useState(false);
+
+  const handleClickShowPassword = () => 
+    setShowPassword((show) => !show);
+  const handleMouseDownPassword = (event) => {
+    event.preventDefault();
+  };
 
   const handleSetDoze = (e, newAlignment) => {
     setDoze(newAlignment);
@@ -68,17 +84,63 @@ const UserModal = (props) => {
       <Typography id="modal-modal-description" sx={{ mt: 2 }}>
           {
             account ? 
-            "Which doze would you like to verify"
+            "Please enter your ID and password"
             :
             "Please Log in first"
           }
       </Typography>
+      <p></p>
       {
         account &&
         <>
-        <TextField id="patient-ID" label="patient-ID" variant="outlined" required value={Id} onChange={handleSetId}/>
-        <TextField id="patient-password" label="patient-password" variant="outlined" required value={password} onChange={handleSetPassword}/>
+        <TextField 
+          id="users-ID" 
+          label="Your ID" 
+          variant="outlined" 
+          required 
+          value={Id} 
+          onChange={handleSetId}
+          InputProps={{
+            startAdornment: (
+              <InputAdornment position="start">
+                <AccountCircle />
+              </InputAdornment>
+            )}
+          }
+        />
+
         <p></p>
+        
+        <FormControl sx={{ m: 0, width: '28.7ch' }} variant="outlined">
+          <InputLabel htmlFor="outlined-adornment-password">Password</InputLabel>
+          <OutlinedInput
+            id="outlined-adornment-password"
+            type={showPassword ? 'text' : 'password'}
+            value={password} 
+            onChange={handleSetPassword}
+            startAdornment={
+              <InputAdornment position="start">
+                <LockIcon />
+              </InputAdornment>
+            }
+            endAdornment={
+              <InputAdornment position="end">
+                <IconButton
+                  aria-label="toggle password visibility"
+                  onClick={handleClickShowPassword}
+                  onMouseDown={handleMouseDownPassword}
+                  edge="end"
+                >
+                  {showPassword ? <VisibilityOff /> : <Visibility />}
+                </IconButton>
+              </InputAdornment>
+            }
+            label="Password"
+          />
+        </FormControl>
+
+        <p></p>
+
 
         <ToggleButtonGroup
             color="primary"

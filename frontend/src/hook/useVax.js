@@ -15,7 +15,7 @@ const VaxContext = createContext({
   verify: async () => {},
   verified: false,
   setVerified: () => {},
-
+  doctors: [],
 
 });
 
@@ -23,7 +23,7 @@ const VaxProvider = (props) => {
 
   //States comes here
   const [account, setAccount] = useState("");
-  const [isDoctor, setIsDoctor] = useState(true)
+  const [isDoctor, setIsDoctor] = useState(false)
   const [doctorModalOpen, setDoctorModalOpen] = useState(false)
   const [userModalOpen, setUserModalOpen] = useState(false)
   const [verifyModalOpen, setVerifyModalOpen] = useState(false)
@@ -34,6 +34,7 @@ const VaxProvider = (props) => {
     console.log("seed:", seed);
     console.log("doze:", doze);
     //TODO: add member
+
   }
 
   const verify = async (seed, doze) => {
@@ -44,6 +45,10 @@ const VaxProvider = (props) => {
     //if (check verified)
     // setVerified(true)
   }
+
+  const doctors = [
+    '0xC064a24Ec8ab00Bd67924d007b94FD8EebD4Bc25',
+  ]
 
 
   return (
@@ -64,6 +69,7 @@ const VaxProvider = (props) => {
         verify,
         verified,
         setVerified,
+        doctors
 
 
 			}

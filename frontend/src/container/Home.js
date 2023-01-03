@@ -95,7 +95,7 @@ const toggleWithString = (s) => {
 }
 
 const Home = () => {
-  const {account, setAccount, doctorModalOpen, setDoctorModalOpen, userModalOpen, setUserModalOpen, verifyModalOpen, setVerifyModalOpen, addMember, verify, verified} = useVax();
+  const {account, setAccount, doctorModalOpen, setDoctorModalOpen, userModalOpen, setUserModalOpen, verifyModalOpen, setVerifyModalOpen, addMember, verify, verified, doctors, setIsDoctor} = useVax();
   const { enqueueSnackbar } = useSnackbar();
 
   const handleModalOpen = (type) => {
@@ -119,7 +119,8 @@ const Home = () => {
     event.preventDefault();
     const addr = await connectWallet()
     setAccount(addr);
-    // TODO: check if account is Doctor (call setIsDoctor();)
+    if(doctors.includes(addr))
+      setIsDoctor(true);
   };
 
 

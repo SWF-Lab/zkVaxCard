@@ -11,6 +11,16 @@ import Button from '@mui/material/Button';
 import { useSnackbar } from 'notistack';
 import keccak256 from 'keccak256'
 
+import { AccountCircle } from '@mui/icons-material';
+import LockIcon from '@mui/icons-material/Lock';
+import InputAdornment from '@mui/material/InputAdornment';
+import IconButton from '@mui/material/IconButton';
+import OutlinedInput from '@mui/material/OutlinedInput';
+import InputLabel from '@mui/material/InputLabel';
+import FormControl from '@mui/material/FormControl';
+import Visibility from '@mui/icons-material/Visibility';
+import VisibilityOff from '@mui/icons-material/VisibilityOff';
+
 const DoctorModal = (props) => {
   
   const {account, isDoctor} = useVax();
@@ -18,6 +28,14 @@ const DoctorModal = (props) => {
   const [password, setPassword] = useState("")
   const [doze, setDoze] = useState(3);
   const { enqueueSnackbar } = useSnackbar();
+  const [showPassword, setShowPassword] = useState(false);
+
+  const handleClickShowPassword = () => 
+    setShowPassword((show) => !show);
+
+  const handleMouseDownPassword = (event) => {
+    event.preventDefault();
+  };
   
   const modalStyle = {
     position: 'absolute',
@@ -51,7 +69,7 @@ const DoctorModal = (props) => {
       const beforeHash = addId.concat(password);
       let seed = keccak256(beforeHash).toString('hex')
       await props.addMember(seed, doze)
-      
+
     }
   }
 
@@ -80,10 +98,54 @@ const DoctorModal = (props) => {
       {
         account && isDoctor &&
         <>
-        <TextField id="patient-ID" label="patient-ID" variant="outlined" required value={addId} onChange={handleSetId}/>
-        <TextField id="patient-password" label="patient-password" variant="outlined" required value={password} onChange={handleSetPassword}/>
+        <TextField 
+          id="patient-ID" 
+          label="patient-ID" 
+          variant="outlined" 
+          required 
+          value={addId} 
+          onChange={handleSetId}
+          InputProps={{
+            startAdornment: (
+              <InputAdornment position="start">
+                <AccountCircle />
+              </InputAdornment>
+            )}
+          }
+        />
         
         <p></p>
+
+        <FormControl sx={{ m: 0, width: '28.7ch' }} variant="outlined">
+          <InputLabel htmlFor="outlined-adornment-password">Password</InputLabel>
+          <OutlinedInput
+            id="outlined-adornment-password"
+            type={showPassword ? 'text' : 'password'}
+            value={password} 
+            onChange={handleSetPassword}
+            startAdornment={
+              <InputAdornment position="start">
+                <LockIcon />
+              </InputAdornment>
+            }
+            endAdornment={
+              <InputAdornment position="end">
+                <IconButton
+                  aria-label="toggle password visibility"
+                  onClick={handleClickShowPassword}
+                  onMouseDown={handleMouseDownPassword}
+                  edge="end"
+                >
+                  {showPassword ? <VisibilityOff /> : <Visibility />}
+                </IconButton>
+              </InputAdornment>
+            }
+            label="Password"
+          />
+        </FormControl>
+        
+        <p></p>
+
         <ToggleButtonGroup
           color="primary"
           value={doze}
@@ -94,7 +156,6 @@ const DoctorModal = (props) => {
           <ToggleButton value="3" aria-label="left aligned">3</ToggleButton>
           <ToggleButton value="4" aria-label="centered">4</ToggleButton>
           <ToggleButton value="5" aria-label="right aligned">5</ToggleButton>
-
         </ToggleButtonGroup>
         <p></p>
         <Button variant="outlined" color="error" onClick={() => handleSubmit()}>
