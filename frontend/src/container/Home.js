@@ -15,11 +15,6 @@ import Link from '@mui/material/Link';
 import GlobalStyles from '@mui/material/GlobalStyles';
 import Container from '@mui/material/Container';  
 
-import Web3 from "web3";
-import Web3Modal from "web3modal";
-import WalletConnectProvider from "@walletconnect/web3-provider";
-import CoinbaseWalletSDK from "@coinbase/wallet-sdk";
-
 import { useVax } from '../hook/useVax';
 import { useSnackbar } from 'notistack';
 import Copyright from '../components/copyright';
@@ -27,6 +22,15 @@ import DoctorModal from '../components/doctorModal';
 import UserModal from '../components/userModal';
 import VerifyModal from '../components/verifyModal';
 
+import { Contract, providers, Wallet } from "ethers"
+import { Identity } from "@semaphore-protocol/identity"
+// import abi from '../contract/Vax.json';
+
+// for wallet connection
+import Web3 from "web3";
+import Web3Modal from "web3modal";
+import WalletConnectProvider from "@walletconnect/web3-provider";
+import CoinbaseWalletSDK from "@coinbase/wallet-sdk";
 
 const INFURA_ID = process.env.INFURA_ID;
 const providerOptions = {
@@ -41,7 +45,7 @@ const providerOptions = {
     options: {
       appName: "web3modal", // Required
       infuraId: INFURA_ID, // Required
-      rpc: "", // Optional if `infuraId` is provided; otherwise it's required
+      rpc: "", // Optional if infuraId is provided; otherwise it's required
       chainId: 1, // Optional. It defaults to 1 if not provided
       darkMode: false, // Optional. Use dark theme, defaults to false
     },
@@ -56,19 +60,19 @@ const web3Modal = new Web3Modal({
   cacheProvider: true, // optional
   providerOptions, // required
 });
-const connectWallet = async () => {
-  if (window.ethereum) {
-    const provider = await web3Modal.connect();
-    const web3 = new Web3(provider);
-    await window.ethereum.send("eth_requestAccounts");
-    const accounts = await web3.eth.getAccounts();
-    const account = accounts[0];
-    return account;
-  } else {
-    // Show alert if Ethereum provider is not detected
-    alert("Please install Mask");
-  }
-};
+
+const ethereumPrivateKey = process.env.ETHEREUM_PRIVATE_KEY
+const ethereumURL = process.env.ETHEREUM_URL
+const contractAddress = process.env.CONTRACT_ADDRESS
+
+const provider = new providers.JsonRpcProvider(ethereumURL)
+// const signer = new Wallet(ethereumPrivateKey, provider);
+// const contract = new Contract(contractAddress, abi, signer)
+
+const test = () => {
+  const identity = new Identity("E12578915fc");
+  console.log(identity);
+}
 
 const tiers = [
   {
@@ -97,6 +101,20 @@ const toggleWithString = (s) => {
 const Home = () => {
   const {account, setAccount, doctorModalOpen, setDoctorModalOpen, userModalOpen, setUserModalOpen, verifyModalOpen, setVerifyModalOpen, addMember, verify, verified, doctors, setIsDoctor} = useVax();
   const { enqueueSnackbar } = useSnackbar();
+
+  const connectWallet = async () => {
+    if (window.ethereum) {
+      const provider = await web3Modal.connect();
+      const web3 = new Web3(provider);
+      await window.ethereum.send("eth_requestAccounts");
+      const accounts = await web3.eth.getAccounts();
+      const account = accounts[0];
+      return account;
+    } else {
+      // Show alert if Ethereum provider is not detected
+      alert("Please install Mask");
+    }
+  };
 
   const handleModalOpen = (type) => {
     if (type === "Doctors")
@@ -143,6 +161,7 @@ const Home = () => {
 
   useEffect(() => {
     console.log(account);
+    test();
   }, [account]);
 
   return (

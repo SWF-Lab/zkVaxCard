@@ -48,6 +48,7 @@ const VaxProvider = (props) => {
 
   const doctors = [
     '0xC064a24Ec8ab00Bd67924d007b94FD8EebD4Bc25',
+    '0xaB50035F25F96dd3DEf1A7a9cC4E1C81AD6a7651'
   ]
 
 
