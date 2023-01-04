@@ -18,11 +18,11 @@ contract Vaccination {
         address semaphoreAddress
     ) {
         semaphore = ISemaphore(semaphoreAddress);
-        vacId[0] = 11013851635916537915;
-        vacId[1] = 10293009457859494039;
-        vacId[2] = 35427849445478396788;
-        vacId[3] = 16958698264868628468;
-        vacId[4] = 24747249385289390819;
+        vacId[0] = 4567654321;
+        vacId[1] = 4567654322;
+        vacId[2] = 4567654323;
+        vacId[3] = 4567654324;
+        vacId[4] = 4567654325;
         
         semaphore.createGroup(vacId[0], 20, 0, address(this));
         semaphore.createGroup(vacId[1], 20, 0, address(this));
@@ -41,13 +41,18 @@ contract Vaccination {
     }
 
     function verify(
-        bytes32 message,
-        uint256 groupId,
+        string calldata message,
         uint256 merkleTreeRoot,
         uint256 nullifierHash,
-        uint256 externalNullifier,
         uint256[8] calldata proof
     ) external {
-        semaphore.verifyProof(groupId, merkleTreeRoot, message, nullifierHash, externalNullifier, proof);
+        semaphore.verifyProof(
+            4567654324,
+            merkleTreeRoot,
+            keccak256(abi.encodePacked(message)),
+            nullifierHash,
+            4567654324,
+            proof
+        );
     }
 }

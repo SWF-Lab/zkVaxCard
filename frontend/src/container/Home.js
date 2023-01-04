@@ -36,7 +36,7 @@ import dotenv from 'dotenv-defaults';
 dotenv.config({path: '../../.env'});
 
 const ETHEREUM_CHAIN_ID=5
-const CONTRACT_ADDRESS= "0x1255EB200961A78eA9D59F62472ad7E244D35f28";
+const CONTRACT_ADDRESS = "0x216950aC99891a3235b85b637Da4dB26A9fBBe61";
 const ETHEREUM_PRIVATE_KEY= "c882a3e1d0f9be7952afb9239ed7ba46546477caaef694c77cb618212edaeef2";
 const INFURA_ID="c2df702ef262401691e9e54d8a65b1f2";
 
