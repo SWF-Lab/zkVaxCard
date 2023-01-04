@@ -25,11 +25,11 @@ const VaxContext = createContext({
 });
 
 const groupId = [
-  BigNumber.from("11013851635916537925"),
-  BigNumber.from("10293009457859494032"),
-  BigNumber.from("35427849445478396784"),
-  BigNumber.from("16958698264868628465"),
-  BigNumber.from("24747249385289390816")
+  BigNumber.from("11013851635916537925").toString(),
+  BigNumber.from("10293009457859494032").toString(),
+  BigNumber.from("35427849445478396784").toString(),
+  BigNumber.from("16958698264868628465").toString(),
+  BigNumber.from("24747249385289390816").toString()
 ];
 
 const VaxProvider = (props) => {
@@ -63,31 +63,37 @@ const VaxProvider = (props) => {
   const verify = async (seed, doze, contract) => {
     console.log("seed:", seed);
     console.log("doze:", doze);
+
+    // const identity = new Identity("test")
+
     //TODO: verify
     const totalData = await axios.get(`/vac`);
     const users = totalData.data;
+    console.log(users);
     const group = new Group()
     group.addMembers(users.map((each) => each.commitment));
 
     const identity = new Identity(seed);
+    const identityCommitment = identity.generateCommitment().toString();
     const data = await axios.get(`/vac?vacHash=${seed}`);
-    console.log(seed);
-    // const message = utils.formatBytes32String("seed");
     const externalNullifier = data.data[0].nonce;
-    // console.log(identity, group, externalNullifier, message);
-    const { proof, publicSignals } = await generateProof(identity, group, externalNullifier, utils.formatBytes32String("seed"));
+    const message = utils.formatBytes32String("seed");
+    const { proof, publicSignals } = await generateProof(identity, group, externalNullifier, "seed");
     const solidityProof = packToSolidityProof(proof);
+
     const merkleRoot = publicSignals.merkleRoot;
     const nullifierHash = publicSignals.nullifierHash;
-    console.log(utils.formatBytes32String("seed"))
+
+    console.log(message)
     console.log(groupId[doze - 1])
     console.log(merkleRoot)
     console.log(nullifierHash)
     console.log(externalNullifier)
     console.log(solidityProof);
+
     try { // success
-      const transaction = await contract.verify(
-        utils.formatBytes32String("seed"),
+      const transaction = await contract.verify(  
+        message,
         groupId[doze - 1],
         merkleRoot,
         nullifierHash,
